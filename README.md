@@ -1,53 +1,106 @@
-# Internship Take Home Assignment - Software Engineer
+# MobileSam Segmentation Model Service
 
-This assignment is designed to assess your software engineering skills in the context of integrating and deploying a machine learning model. Though the task involves a machine learning model, the primary focus is on developing and deploying the software application.
+This project provides a FastAPI-based microservice to deploy the MobileSam segmentation model. The service processes image inputs and returns segmentation results. The project is containerized using Docker to ensure easy deployment and scalability.
 
-## How to Run the Code
+## Table of Contents
 
-1. **Create a Virtual Environment and Activate It**
+- [Installation](#installation)
+- [Usage](#usage)
+- [API Endpoint](#api-endpoint)
+- [Testing](#testing)
+- [Development](#development)
+- [Improvements](#improvements)
 
-    ```bash
-    python -m venv venv
-    source venv/bin/activate  # On Windows use `venv\Scripts\activate`
-    ```
+## Installation
 
-2. **Install the Requirements**
+### Prerequisites
 
-    ```bash
-    pip install -r requirements.txt
-    ```
+- Docker
+- Python 3.8 or higher (for local development)
+- `pip` (Python package installer)
 
-3. **Run the Code**
+### Steps
 
-    ```bash
-    python main.py
-    ```
+1. **Clone the repository:**
 
-## Task Overview
+   ```sh
+   git clone https://github.com/Slpn/mobilesam-task.git
+   cd mobilesam-task
+   ```
 
-**Title:** MobileSam Segmentation Model Service
+2. **Build the Docker image:**
 
-**Expected Time to Complete:** 4 hours
+   ```sh
+   docker build -t mobilesam-app .
+   ```
 
-**Objective:** Develop a FastAPI service to deploy the MobileSam segmentation model, containerize the service with Docker, and ensure efficient interaction with the model on the CPU.
+3. **Run the Docker container:**
 
-**Background:**
-MobileSam is a machine learning model specialized in image segmentation on CPUs. Your task is to create a microservice that allows users to interact with this model via an API. You should find the script `main.py` in this repository, which contains the MobileSam model and a function `segment_everything` that takes an image as input and returns the segmentation result. You can use this function to develop your service. Ignore the default parameters of the function for now.
+   ```sh
+   docker run -p 80:80 mobilesam-app
+   ```
 
-## Task Description
+## Usage
 
-- **Develop a Microservice:** Use a Python API framework (we suggest FastAPI) to expose the MobileSam segmentation model as a RESTful API.
-  
-- **Model Integration:** Incorporate the MobileSam segmentation model into your service. It should process image inputs and return segmentation results.
-  
-- **API Endpoints:** Create a POST endpoint `/segment-image` to accept an image file, process it through MobileSam, and return the segmentation result.
-  
-- **Documentation:** Provide clear instructions for setting up, running, and interacting with the service in a README.md file.
+### Running the Service Locally
 
-- **[Bonus]** Docker Familiarity: Containerize your service using Docker.
+1. **Create a virtual environment:**
 
-## Submission
+   ```sh
+   python -m venv venv
+   source venv/bin/activate  # On Windows use `venv\Scripts\activate`
+   ```
 
-- Submit your code via a GitHub repository link.
-- Include a README file with detailed setup and usage instructions.
-- Provide any necessary scripts or files for testing the API.
+2. **Install dependencies:**
+
+   ```sh
+   pip install -r requirements.txt
+   ```
+
+3. **Start the FastAPI application:**
+
+   ```sh
+   uvicorn api:app --reload
+   ```
+
+### API Endpoint
+
+Framework : FastApi
+Package use:
+
+- **Uvicorn** ASGI server
+- **Pillow** Library for manipulating image and use here for convertion
+
+  The service exposes the following endpoint:
+
+#### POST `/segment-image`
+
+- **Description:** Accepts an image file and returns the segmented image.
+- **Request:**
+  - **File:** `file` (JPEG, JPG, or PNG image)
+- **Response:**
+  - **Success:** Returns the segmented image as a PNG file.
+  - **Error:** Returns a JSON object with an error message.
+
+#### Test
+
+Test by made with unittest and test
+
+- Invalid file
+- No file
+- None image file
+
+```sh
+   python3 test_api/test_api.py
+```
+
+**Example Request:**
+
+```sh
+curl -X POST -F "file=@path_to_your_image.jpg" http://localhost:80/segment-image --output segmented_img.jpg
+```
+
+**_Improvements_**
+
+- **Add Prometheus:** open-source systems monitoring and alerting toolkit for API
+- **Add Healthcheck:** Check if the API is running well
